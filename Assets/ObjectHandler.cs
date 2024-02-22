@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using GLTFast;
 using Palmmedia.ReportGenerator.Core.Common;
 using UnityEngine;
 
@@ -19,13 +21,14 @@ public class ObjectHandler : MonoBehaviour
     {
         ModelObject = PleacableObjects[0];
         ModelObjectOriginalPosition = ModelObject.transform.position;
-        
+
         var loadedObjects = this.DataService.LoadData<List<ObjectModel>>("./save.json");
-        
-        if( loadedObjects != null ){
+
+        if (loadedObjects != null)
+        {
             foreach (var objectModel in loadedObjects)
             {
-                Instantiate( GameObject.Find(objectModel.Name), new Vector3 { x = objectModel.X , y = objectModel.Y, z = objectModel.Z }, Quaternion.identity);
+                Instantiate(GameObject.Find(objectModel.Name), new Vector3 { x = objectModel.X, y = objectModel.Y, z = objectModel.Z }, Quaternion.identity);
             }
         }
 
@@ -36,31 +39,36 @@ public class ObjectHandler : MonoBehaviour
     {
 
         //TODO :(
-        if(Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
             ModelObject.transform.position = ModelObjectOriginalPosition;
             ModelObject = PleacableObjects[0];
             ModelObjectOriginalPosition = ModelObject.transform.position;
         }
-        if(Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.W))
         {
             ModelObject.transform.position = ModelObjectOriginalPosition;
             ModelObject = PleacableObjects[1];
             ModelObjectOriginalPosition = ModelObject.transform.position;
         }
-        if(Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             ModelObject.transform.position = ModelObjectOriginalPosition;
             ModelObject = PleacableObjects[2];
             ModelObjectOriginalPosition = ModelObject.transform.position;
         }
-        if(Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            this.LoadGltfBinaryFromMemory();
+        }
+        if (Input.GetKeyDown(KeyCode.S))
         {
             var saveFileObject = new List<ObjectModel>();
 
             foreach (var ObjectModel in GameObject.FindGameObjectsWithTag("ObjectModel"))
             {
-                saveFileObject.Add( new ObjectModel {
+                saveFileObject.Add(new ObjectModel
+                {
                     Name = ObjectModel.GetComponents<MeshFilter>()[0].name,
                     MeshName = ObjectModel.GetComponents<MeshFilter>()[0].name,
                     X = ObjectModel.transform.position.x,
@@ -68,8 +76,8 @@ public class ObjectHandler : MonoBehaviour
                     Z = ObjectModel.transform.position.z
                 });
             }
-            
-            if (DataService.SaveData<List<ObjectModel>>("./save.json",saveFileObject))
+
+            if (DataService.SaveData<List<ObjectModel>>("./save.json", saveFileObject))
                 Debug.LogWarning("Data Saved!");
             else
                 Debug.LogError("Data Could not be save.");
@@ -77,13 +85,13 @@ public class ObjectHandler : MonoBehaviour
         }
 
         // Set Mouse position based on Screen
-        MousePosition = ActiveCamera.ScreenToWorldPoint( new Vector3(Input.mousePosition.x, Input.mousePosition.y, 23)) ;
-        ModelObject.transform.position = new Vector3(MousePosition.x, 0 , MousePosition.z); //TODO: Single Responsability Principle is beeing disrespected
+        MousePosition = ActiveCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 23));
+        ModelObject.transform.position = new Vector3(MousePosition.x, 0, MousePosition.z); //TODO: Single Responsability Principle is beeing disrespected
 
         // Set new Object Position based on Mouse Position
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
             Instantiate(ModelObject, MousePosition, Quaternion.identity); //TODO: usar prefabs
-        
+
     }
 
     void FixedUpdate()
@@ -91,7 +99,7 @@ public class ObjectHandler : MonoBehaviour
 
     }
 
-    private IList<string> GetGameObjectComponentsNameList( GameObject gameObject)
+    private IList<string> GetGameObjectComponentsNameList(GameObject gameObject)
     {
         IList<string> result = new List<string>();
 
@@ -101,5 +109,14 @@ public class ObjectHandler : MonoBehaviour
         }
 
         return result;
-    } 
+    }
+
+    async void LoadGltfBinaryFromMemory()
+    {
+        string filePath = "./Assets/Models/door-with-animation.glb";
+        byte[] data = File.ReadAllBytes(filePath);
+        var gltf = new GltfImport();
+        bool success = await gltf.LoadGltfBinary( data, new Uri(filePath, UriKind.Relative) );
+        if (success) success = await gltf.InstantiateMainSceneAsync(transform);
+    }
 }
