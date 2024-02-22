@@ -20,10 +20,10 @@ public class ObjectHandler : MonoBehaviour
         ModelObject = PleacableObjects[0];
         ModelObjectOriginalPosition = ModelObject.transform.position;
         
-        var loadedObjects = this.DataService.LoadData<List<ObjectModel>>("/save.json");
+        var loadedObjects = this.DataService.LoadData<List<ObjectModel>>("./save.json");
         
         if( loadedObjects != null ){
-            foreach (var objectModel in this.DataService.LoadData<List<ObjectModel>>("/save.json"))
+            foreach (var objectModel in loadedObjects)
             {
                 Instantiate( GameObject.Find(objectModel.Name), new Vector3 { x = objectModel.X , y = objectModel.Y, z = objectModel.Z }, Quaternion.identity);
             }
@@ -69,7 +69,7 @@ public class ObjectHandler : MonoBehaviour
                 });
             }
             
-            if (DataService.SaveData<List<ObjectModel>>("/save.json",saveFileObject))
+            if (DataService.SaveData<List<ObjectModel>>("./save.json",saveFileObject))
                 Debug.LogWarning("Data Saved!");
             else
                 Debug.LogError("Data Could not be save.");
