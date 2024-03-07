@@ -2,35 +2,30 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using GLTFast;
 using Palmmedia.ReportGenerator.Core.Common;
+using SFB;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ObjectHandler : MonoBehaviour
 {
     public Camera ActiveCamera;
+    public TextMeshPro ActionText;
     public GameObject[] PleacableObjects;
+    public GameObject HoldingContainer;
+    public GameObject ComponentsContainer;
 
     Vector3 MousePosition;
-    GameObject ModelObject;
+    GameObject HoldingModelObject;
     Vector3 ModelObjectOriginalPosition;
     IDataService DataService = new DataService();
 
-    // Start is called before the first frame update
     void Start()
     {
-        ModelObject = PleacableObjects[0];
-        ModelObjectOriginalPosition = ModelObject.transform.position;
-
-        var loadedObjects = this.DataService.LoadData<List<ObjectModel>>("./save.json");
-
-        if (loadedObjects != null)
-        {
-            foreach (var objectModel in loadedObjects)
-            {
-                Instantiate(GameObject.Find(objectModel.Name), new Vector3 { x = objectModel.X, y = objectModel.Y, z = objectModel.Z }, Quaternion.identity);
-            }
-        }
 
     }
 
@@ -38,60 +33,68 @@ public class ObjectHandler : MonoBehaviour
     void Update()
     {
 
+        if(HoldingModelObject){
+            // Set Mouse position based on Screen
+            MousePosition = ActiveCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 23));
+            // Move Holding Object According to Mouse Position
+            HoldingModelObject.transform.position = new Vector3(MousePosition.x, 0, MousePosition.z); 
+            //TODO: Single Responsability Principle is beeing disrespected
+        }
+
         //TODO :(
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            ModelObject.transform.position = ModelObjectOriginalPosition;
-            ModelObject = PleacableObjects[0];
-            ModelObjectOriginalPosition = ModelObject.transform.position;
-        }
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            ModelObject.transform.position = ModelObjectOriginalPosition;
-            ModelObject = PleacableObjects[1];
-            ModelObjectOriginalPosition = ModelObject.transform.position;
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            ModelObject.transform.position = ModelObjectOriginalPosition;
-            ModelObject = PleacableObjects[2];
-            ModelObjectOriginalPosition = ModelObject.transform.position;
-        }
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            this.LoadGltfBinaryFromMemory();
-        }
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            var saveFileObject = new List<ObjectModel>();
+            StandaloneFileBrowser.OpenFilePanelAsync("Open File", "", "*", false,  (string[] paths) => {
+                    
+                    // Create a temporary game object to hold the placeble object
+                    GameObject newGameObject = new GameObject(paths[0].Split("\\").Last());
+                    // Set this object as child of Components Container ( in order to organize )
+                    newGameObject.transform.SetParent(HoldingContainer.transform);
+                    // Load component with the file path
+                    var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
+                    gltf.Url = paths[0];
 
-            foreach (var ObjectModel in GameObject.FindGameObjectsWithTag("ObjectModel"))
-            {
-                saveFileObject.Add(new ObjectModel
-                {
-                    Name = ObjectModel.GetComponents<MeshFilter>()[0].name,
-                    MeshName = ObjectModel.GetComponents<MeshFilter>()[0].name,
-                    X = ObjectModel.transform.position.x,
-                    Y = ObjectModel.transform.position.y,
-                    Z = ObjectModel.transform.position.z
-                });
-            }
+                    // Set holding object as the created component
+                    this.HoldingModelObject = newGameObject;
 
-            if (DataService.SaveData<List<ObjectModel>>("./save.json", saveFileObject))
-                Debug.LogWarning("Data Saved!");
-            else
-                Debug.LogError("Data Could not be save.");
-
+                }
+            );
         }
+        // if (Input.GetKeyDown(KeyCode.S))
+        // {
+        //     var saveFileObject = new List<ObjectModel>();
 
-        // Set Mouse position based on Screen
-        MousePosition = ActiveCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 23));
-        ModelObject.transform.position = new Vector3(MousePosition.x, 0, MousePosition.z); //TODO: Single Responsability Principle is beeing disrespected
+        //     foreach (var ObjectModel in GameObject.FindGameObjectsWithTag("ObjectModel"))
+        //     {
+        //         saveFileObject.Add(new ObjectModel
+        //         {
+        //             Name = ObjectModel.GetComponents<MeshFilter>()[0].name,
+        //             MeshName = ObjectModel.GetComponents<MeshFilter>()[0].name,
+        //             X = ObjectModel.transform.position.x,
+        //             Y = ObjectModel.transform.position.y,
+        //             Z = ObjectModel.transform.position.z
+        //         });
+        //     }
+
+        //     if (DataService.SaveData<List<ObjectModel>>("./save.json", saveFileObject))
+        //         Debug.LogWarning("Data Saved!");
+        //     else
+        //         Debug.LogError("Data Could not be save.");
+
+        // }
 
         // Set new Object Position based on Mouse Position
         if (Input.GetMouseButtonDown(0))
-            Instantiate(ModelObject, MousePosition, Quaternion.identity); //TODO: usar prefabs
-
+        {
+            GameObject newComponent = Instantiate(HoldingModelObject, MousePosition, Quaternion.identity);
+            newComponent.transform.SetParent(ComponentsContainer.transform);
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            this.HoldingModelObject = null;
+            Destroy(this.HoldingContainer.transform.GetChild(0).gameObject);
+        }
+            
     }
 
     void FixedUpdate()
@@ -118,5 +121,12 @@ public class ObjectHandler : MonoBehaviour
         var gltf = new GltfImport();
         bool success = await gltf.LoadGltfBinary( data, new Uri(filePath, UriKind.Relative) );
         if (success) success = await gltf.InstantiateMainSceneAsync(transform);
+    }
+
+    async void LoadGltfFromPathAndInstantiate(string path)
+    { 
+        GltfImport model = new GltfImport();
+        await model.LoadGltfBinary( File.ReadAllBytes( path ) );
+        await model.InstantiateMainSceneAsync(transform);
     }
 }
