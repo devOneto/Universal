@@ -1,1 +1,22 @@
-[{"X":-6.0,"Y":0.0,"Z":-2.0,"Name":"Sphere","MeshName":"Sphere"},{"X":3.83392859,"Y":0.0,"Z":-1.460547,"Name":"Cylinder","MeshName":"Cylinder"},{"X":-6.0,"Y":0.0,"Z":0.0,"Name":"Cube","MeshName":"Cube"},{"X":-6.0,"Y":0.0,"Z":-2.0,"Name":"Sphere(Clone)","MeshName":"Sphere(Clone)"},{"X":2.58816934,"Y":0.0,"Z":-1.31019664,"Name":"Cylinder(Clone)","MeshName":"Cylinder(Clone)"},{"X":-6.0,"Y":0.0,"Z":0.0,"Name":"Cube(Clone)","MeshName":"Cube(Clone)"},{"X":0.7195322,"Y":0.0,"Z":-0.300703019,"Name":"Sphere(Clone)(Clone)","MeshName":"Sphere(Clone)(Clone)"},{"X":-6.0,"Y":0.0,"Z":2.0,"Name":"Cylinder(Clone)(Clone)","MeshName":"Cylinder(Clone)(Clone)"},{"X":-6.0,"Y":0.0,"Z":0.0,"Name":"Cube(Clone)(Clone)","MeshName":"Cube(Clone)(Clone)"},{"X":-1.8364197,"Y":-1.90734863E-06,"Z":3.07143521,"Name":"Cube(Clone)(Clone)(Clone)","MeshName":"Cube(Clone)(Clone)(Clone)"},{"X":0.612140357,"Y":-1.90734863E-06,"Z":1.80419886,"Name":"Cylinder(Clone)(Clone)(Clone)","MeshName":"Cylinder(Clone)(Clone)(Clone)"},{"X":-0.655097067,"Y":-1.90734863E-06,"Z":1.82567692,"Name":"Sphere(Clone)(Clone)(Clone)","MeshName":"Sphere(Clone)(Clone)(Clone)"},{"X":-1.72902632,"Y":-1.90734863E-06,"Z":-0.6228818,"Name":"Cube(Clone)(Clone)","MeshName":"Cube(Clone)(Clone)"},{"X":3.03922057,"Y":-1.90734863E-06,"Z":-2.96404815,"Name":"Sphere(Clone)(Clone)","MeshName":"Sphere(Clone)(Clone)"},{"X":-1.77198386,"Y":-1.90734863E-06,"Z":-2.856655,"Name":"Cylinder(Clone)(Clone)","MeshName":"Cylinder(Clone)(Clone)"},{"X":2.974784,"Y":-1.90734863E-06,"Z":3.028478,"Name":"Cube(Clone)","MeshName":"Cube(Clone)"},{"X":4.177585,"Y":-1.90734863E-06,"Z":0.7087904,"Name":"Sphere(Clone)","MeshName":"Sphere(Clone)"},{"X":0.332918823,"Y":-1.90734863E-06,"Z":-3.52249146,"Name":"Cylinder(Clone)","MeshName":"Cylinder(Clone)"}]
+[
+    {
+        "Name": "door-with-animation.glb(Clone)",
+        "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\door-with-animation.glb",
+        "RelativePosition": {
+            "X": 5.2300415,
+            "Y": 0.0,
+            "Z": 3.071435
+        },
+        "Children": null
+    },
+    {
+        "Name": "prototype-tileset.glb(Clone)",
+        "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\prototype-tileset.glb",
+        "RelativePosition": {
+            "X": 0.2255249,
+            "Y": 0.0,
+            "Z": -2.87813377
+        },
+        "Children": null
+    }
+]
