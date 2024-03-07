@@ -44,6 +44,7 @@ public class ObjectHandler : MonoBehaviour
         //TODO :(
         if (Input.GetKeyDown(KeyCode.Q))
         {
+            this.DestroyHoldingContainerComponents();
             StandaloneFileBrowser.OpenFilePanelAsync("Open File", "", "*", false,  (string[] paths) => {
                     
                     // Create a temporary game object to hold the placeble object
@@ -60,28 +61,47 @@ public class ObjectHandler : MonoBehaviour
                 }
             );
         }
-        // if (Input.GetKeyDown(KeyCode.S))
-        // {
-        //     var saveFileObject = new List<ObjectModel>();
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            var saveFileObject = new List<Component>();
 
-        //     foreach (var ObjectModel in GameObject.FindGameObjectsWithTag("ObjectModel"))
-        //     {
-        //         saveFileObject.Add(new ObjectModel
-        //         {
-        //             Name = ObjectModel.GetComponents<MeshFilter>()[0].name,
-        //             MeshName = ObjectModel.GetComponents<MeshFilter>()[0].name,
-        //             X = ObjectModel.transform.position.x,
-        //             Y = ObjectModel.transform.position.y,
-        //             Z = ObjectModel.transform.position.z
-        //         });
-        //     }
+            int componentsContainerChildCount = this.ComponentsContainer.transform.childCount;
+            for (int i = 0; i < componentsContainerChildCount; i++)
+            {
+                var currentChild = this.ComponentsContainer.transform.GetChild(i);
+                saveFileObject.Add( new Component {
+                    Name = currentChild.gameObject.name,
+                    MeshPath = currentChild.GetComponent<GLTFast.GltfAsset>().Url,
+                    RelativePosition = new Position {
+                        X = currentChild.transform.position.x,
+                        Y = currentChild.transform.position.y,
+                        Z = currentChild.transform.position.z
+                    }
+                });
+            }
 
-        //     if (DataService.SaveData<List<ObjectModel>>("./save.json", saveFileObject))
-        //         Debug.LogWarning("Data Saved!");
-        //     else
-        //         Debug.LogError("Data Could not be save.");
+            if (DataService.SaveData<List<Component>>("./save.json", saveFileObject))
+                Debug.LogWarning("Data Saved!");
+            else
+                Debug.LogError("Data Could not be save.");
 
-        // }
+        }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            StandaloneFileBrowser.OpenFilePanelAsync("Open File", "", "json", false,  (string[] paths) => {
+                    var loadedComponents = this.DataService.LoadData<Component[]>(paths[0]);
+                    foreach (var component in loadedComponents)
+                    {
+                        var newGameObject = new GameObject();
+                        newGameObject.name = component.Name;
+                        newGameObject.transform.position = new Vector3(component.RelativePosition.X,component.RelativePosition.Y, component.RelativePosition.Z );
+                        newGameObject.transform.SetParent(HoldingContainer.transform);
+                        var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
+                        gltf.Url = component.MeshPath;
+                    }
+                }
+            );
+        }
 
         // Set new Object Position based on Mouse Position
         if (Input.GetMouseButtonDown(0))
@@ -92,7 +112,7 @@ public class ObjectHandler : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             this.HoldingModelObject = null;
-            Destroy(this.HoldingContainer.transform.GetChild(0).gameObject);
+            this.DestroyHoldingContainerComponents();
         }
             
     }
@@ -128,5 +148,11 @@ public class ObjectHandler : MonoBehaviour
         GltfImport model = new GltfImport();
         await model.LoadGltfBinary( File.ReadAllBytes( path ) );
         await model.InstantiateMainSceneAsync(transform);
+    }
+
+    void DestroyHoldingContainerComponents(){
+        for (int i = 0; i < this.HoldingContainer.transform.childCount; i++){
+            Destroy(this.HoldingContainer.transform.GetChild(i).gameObject);
+        }
     }
 }
