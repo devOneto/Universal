@@ -6,6 +6,11 @@ using UnityEngine;
 
 public class DataService : IDataService
 {
+
+    public string[] GetSaveNames(string RelativePath){
+        return Directory.GetFiles(RelativePath);
+    }
+
     public T LoadData<T>(string RelativePath)
     {
         try
