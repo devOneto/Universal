@@ -107,6 +107,7 @@ public class ObjectHandler : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             GameObject newComponent = Instantiate(HoldingModelObject, MousePosition, Quaternion.identity);
+            // newComponent.transform.localScale
             newComponent.transform.SetParent(ComponentsContainer.transform);
         }
         if (Input.GetKeyDown(KeyCode.Escape))
