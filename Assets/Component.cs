@@ -6,7 +6,7 @@ public class Component
 {
     public string Name { get; set; } = "";
     public string MeshPath { get; set; } = "";
-    public Position RelativePosition { get; set; }
-    public ICollection<Component> Children { get; set; }
+    public Position RelativePosition { get; set; } = new Position();
+    public IList<Component?> Components { get; set; } = new List<Component>();
 
 }

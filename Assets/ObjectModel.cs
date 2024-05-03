@@ -8,4 +8,5 @@ public class ObjectModel
     public float Z { get; set; } = 0;
     public string Name { get; set; } = "";
     public string MeshName { get; set; } = "";
+    public ObjectModel Parent { get; set; }
 }

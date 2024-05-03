@@ -8,6 +8,7 @@ using GLTFast;
 using Palmmedia.ReportGenerator.Core.Common;
 using SFB;
 using TMPro;
+using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,7 +34,8 @@ public class ObjectHandler : MonoBehaviour
     void Update()
     {
 
-        if(HoldingModelObject){
+        if (HoldingModelObject)
+        {
             // Set Mouse position based on Screen
             MousePosition = ActiveCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 23));
             // Move Holding Object According to Mouse Position
@@ -41,85 +43,12 @@ public class ObjectHandler : MonoBehaviour
             //TODO: Single Responsability Principle is beeing disrespected
         }
 
-        //TODO :(
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            this.DestroyHoldingContainerComponents();
-            StandaloneFileBrowser.OpenFilePanelAsync("Open File", "", "*", false,  (string[] paths) => {
-                    
-                    // Create a temporary game object to hold the placeble object
-                    GameObject newGameObject = new GameObject(paths[0].Split("\\").Last());
-                    // Set this object as child of Components Container ( in order to organize )
-                    newGameObject.transform.SetParent(HoldingContainer.transform);
-                    // Load component with the file path
-                    var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
-                    gltf.Url = paths[0];
-
-                    // Set holding object as the created component
-                    this.HoldingModelObject = newGameObject;
-
-                }
-            );
-        }
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            var saveFileObject = new List<Component>();
-
-            int componentsContainerChildCount = this.ComponentsContainer.transform.childCount;
-            for (int i = 0; i < componentsContainerChildCount; i++)
-            {
-                var currentChild = this.ComponentsContainer.transform.GetChild(i);
-                saveFileObject.Add( new Component {
-                    Name = currentChild.gameObject.name,
-                    MeshPath = currentChild.GetComponent<GLTFast.GltfAsset>().Url,
-                    RelativePosition = new Position {
-                        X = currentChild.transform.position.x,
-                        Y = currentChild.transform.position.y,
-                        Z = currentChild.transform.position.z
-                    }
-                });
-            }
-
-            if (DataService.SaveData<List<Component>>("./save.json", saveFileObject))
-                Debug.LogWarning("Data Saved!");
-            else
-                Debug.LogError("Data Could not be save.");
-
-        }
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            StandaloneFileBrowser.OpenFilePanelAsync("Open File", "", "json", false,  (string[] paths) => {
-                    var loadedComponents = this.DataService.LoadData<Component[]>(paths[0]);
-                    foreach (var component in loadedComponents)
-                    {
-                        var newGameObject = new GameObject();
-                        newGameObject.name = component.Name;
-                        newGameObject.transform.position = new Vector3(component.RelativePosition.X,component.RelativePosition.Y, component.RelativePosition.Z );
-                        newGameObject.transform.SetParent(HoldingContainer.transform);
-                        var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
-                        gltf.Url = component.MeshPath;
-                    }
-                }
-            );
-        }
-
-        // Set new Object Position based on Mouse Position
-        if (Input.GetMouseButtonDown(0))
-        {
-            GameObject newComponent = Instantiate(HoldingModelObject, MousePosition, Quaternion.identity);
-            // newComponent.transform.localScale
-            newComponent.transform.SetParent(ComponentsContainer.transform);
-        }
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            this.HoldingModelObject = null;
-            this.DestroyHoldingContainerComponents();
-        }
-            
-    }
-
-    void FixedUpdate()
-    {
+        //TODO : Better user input management
+        if (Input.GetKeyDown(KeyCode.Q)) ImportGLTFModelToScene();
+        if (Input.GetKeyDown(KeyCode.S)) Save();
+        if (Input.GetKeyDown(KeyCode.L)) Load();
+        if (Input.GetKeyDown(KeyCode.Escape)) CleanHoldingObjectContainer();
+        if (HoldingModelObject && Input.GetMouseButtonDown(0)) SetHoldingObjectPositionOnScene();
 
     }
 
@@ -135,25 +64,141 @@ public class ObjectHandler : MonoBehaviour
         return result;
     }
 
-    async void LoadGltfBinaryFromMemory()
+    void ImportGLTFModelToScene()
     {
-        string filePath = "./Assets/Models/door-with-animation.glb";
-        byte[] data = File.ReadAllBytes(filePath);
-        var gltf = new GltfImport();
-        bool success = await gltf.LoadGltfBinary( data, new Uri(filePath, UriKind.Relative) );
-        if (success) success = await gltf.InstantiateMainSceneAsync(transform);
+        this.DestroyHoldingContainerComponents();
+        StandaloneFileBrowser.OpenFilePanelAsync("Open File", "", "glb", false, (string[] paths) =>
+        {
+
+            // Create a temporary game object to hold the placeble object
+            GameObject newGameObject = new GameObject(paths[0].Split("\\").Last());
+            // Set this object as child of Components Container ( in order to organize )
+            newGameObject.transform.SetParent(HoldingContainer.transform);
+            // Load component with the file path
+            var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
+            gltf.Url = paths[0];
+
+            // Set holding object as the created component
+            this.HoldingModelObject = newGameObject;
+
+        }
+        );
     }
 
-    async void LoadGltfFromPathAndInstantiate(string path)
-    { 
-        GltfImport model = new GltfImport();
-        await model.LoadGltfBinary( File.ReadAllBytes( path ) );
-        await model.InstantiateMainSceneAsync(transform);
+    void SetHoldingObjectPositionOnScene()
+    {
+        GameObject newComponent = Instantiate(HoldingModelObject, MousePosition, Quaternion.identity);
+        newComponent.tag = "Component";
+        newComponent.transform.SetParent(ComponentsContainer.transform);
     }
 
-    void DestroyHoldingContainerComponents(){
-        for (int i = 0; i < this.HoldingContainer.transform.childCount; i++){
+    void DestroyHoldingContainerComponents()
+    {
+        for (int i = 0; i < this.HoldingContainer.transform.childCount; i++)
+        {
             Destroy(this.HoldingContainer.transform.GetChild(i).gameObject);
         }
     }
+
+    void CleanHoldingObjectContainer()
+    {
+        this.HoldingModelObject = null;
+        this.DestroyHoldingContainerComponents();
+    }
+
+    void Save()
+    {
+        var saveFileObject = new SaveMetadata{
+            Name = "Save",
+            Components = {}
+        };
+
+        for (int i = 0; i < ComponentsContainer.transform.childCount; i++)
+        {
+            GameObject currentGameObject = ComponentsContainer.transform.GetChild(i).gameObject;
+            if(currentGameObject.tag == "Component"){
+                saveFileObject.Components.Add(CreateComponentMetadataFromGameObjectToSave(ComponentsContainer.transform.GetChild(i).gameObject));
+            }
+        }
+
+        if(this.ComponentsContainer.transform.childCount <= 0){
+            Debug.LogError("Nothing to save."); 
+            return;
+        }
+
+        if (DataService.SaveData<SaveMetadata>("./save.json", saveFileObject))
+            Debug.LogWarning("Data Saved!");
+        else
+            Debug.LogError("Data Could not be save.");
+    }
+
+    void Load()
+    {
+        StandaloneFileBrowser.OpenFilePanelAsync("Open File", "", "json", false, (string[] paths) => {
+            
+            SaveMetadata loadedSaveData = this.DataService.LoadData<SaveMetadata>(paths[0]);
+
+            GameObject savedGameObjectContainer = new GameObject( loadedSaveData.Name );
+            savedGameObjectContainer.tag = "Component";
+
+            foreach (Component component in loadedSaveData.Components )
+            {
+                GameObject newGameObject = CreateGameObjectFromUnivComponent(component);
+                
+                if ( ComponentsContainer.transform.childCount == 0 ){
+                    newGameObject.transform.SetParent(savedGameObjectContainer.transform);
+                }
+            }
+
+            savedGameObjectContainer.transform.SetParent(ComponentsContainer.transform);
+
+        });
+    }
+
+    GameObject CreateGameObjectFromUnivComponent ( Component component ) {
+
+        // Create Game Object
+        var newGameObject = new GameObject();
+        newGameObject.name = component.Name;
+        newGameObject.transform.position = new Vector3(component.RelativePosition.X, component.RelativePosition.Y, component.RelativePosition.Z);
+        var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
+        gltf.Url = component.MeshPath;
+        newGameObject.tag = "Component";
+
+        int currentChildIndex = 0;
+        while( currentChildIndex != component.Components.Count() ) {
+            
+            Component currentChildComponent = component.Components[currentChildIndex];
+            GameObject childComponentGameObject = CreateGameObjectFromUnivComponent(currentChildComponent);
+            childComponentGameObject.transform.SetParent(newGameObject.transform);
+            currentChildIndex++;
+        }
+        
+        return newGameObject;
+
+    }
+
+    Component CreateComponentMetadataFromGameObjectToSave( GameObject gameObject ){
+
+        Component resultComponent  = new Component {
+            Name = gameObject.name,
+            MeshPath = gameObject.GetComponent<GLTFast.GltfAsset>() ? gameObject.GetComponent<GLTFast.GltfAsset>().Url : "",
+            RelativePosition = new Position
+            {
+                X = gameObject.transform.position.x,
+                Y = gameObject.transform.position.y,
+                Z = gameObject.transform.position.z
+            }
+        };
+        int childCount = 0;
+        while(childCount != gameObject.transform.childCount  ) {
+            GameObject currentChild = gameObject.transform.GetChild(childCount).gameObject;
+            if(currentChild.tag == "Component"){
+                resultComponent.Components.Add( CreateComponentMetadataFromGameObjectToSave( currentChild ) );
+            }
+            childCount++;
+        }
+        return resultComponent;
+    }
+
 }
