@@ -41,6 +41,13 @@ public class ObjectHandler : MonoBehaviour
             // Move Holding Object According to Mouse Position
             HoldingModelObject.transform.position = new Vector3(MousePosition.x, 0, MousePosition.z); 
             //TODO: Single Responsability Principle is beeing disrespected
+            if (Input.GetKeyDown(KeyCode.R)) {
+                HoldingModelObject.transform.eulerAngles = new Vector3{
+                    x = HoldingModelObject.transform.eulerAngles.x,
+                    y = HoldingModelObject.transform.eulerAngles.y + 45,
+                    z = HoldingModelObject.transform.eulerAngles.z
+                };
+            }
         }
 
         //TODO : Better user input management
@@ -87,7 +94,7 @@ public class ObjectHandler : MonoBehaviour
 
     void SetHoldingObjectPositionOnScene()
     {
-        GameObject newComponent = Instantiate(HoldingModelObject, MousePosition, Quaternion.identity);
+        GameObject newComponent = Instantiate(HoldingModelObject, MousePosition, Quaternion.Euler(HoldingModelObject.transform.eulerAngles.x, HoldingModelObject.transform.eulerAngles.y, HoldingModelObject.transform.eulerAngles.z) );
         newComponent.tag = "Component";
         newComponent.transform.SetParent(ComponentsContainer.transform);
     }
@@ -161,6 +168,7 @@ public class ObjectHandler : MonoBehaviour
         var newGameObject = new GameObject();
         newGameObject.name = component.Name;
         newGameObject.transform.position = new Vector3(component.RelativePosition.X, component.RelativePosition.Y, component.RelativePosition.Z);
+        newGameObject.transform.rotation = new Quaternion(component.Rotation.X,component.Rotation.Y,component.Rotation.Z, 1.0f);
         var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
         gltf.Url = component.MeshPath;
         newGameObject.tag = "Component";
@@ -188,6 +196,11 @@ public class ObjectHandler : MonoBehaviour
                 X = gameObject.transform.position.x,
                 Y = gameObject.transform.position.y,
                 Z = gameObject.transform.position.z
+            },
+            Rotation = new Rotation {
+                X = gameObject.transform.rotation.x,
+                Y = gameObject.transform.rotation.y,
+                Z = gameObject.transform.rotation.z,
             }
         };
         int childCount = 0;

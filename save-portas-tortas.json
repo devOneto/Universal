@@ -1,17 +1,17 @@
 {
-    "Name": "Save",
+    "Name": "corredor-com-porta-torta",
     "Components": [
         {
             "Name": "door-with-animation.glb(Clone)",
             "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\door-with-animation.glb",
             "RelativePosition": {
-                "X": 3.15386963,
+                "X": -0.2966919,
                 "Y": 0.0,
-                "Z": 2.92311573
+                "Z": 2.46157074
             },
             "Rotation": {
                 "X": 0.0,
-                "Y": 0.0,
+                "Y": 0.7071068,
                 "Z": 0.0
             },
             "Components": []
@@ -20,13 +20,13 @@
             "Name": "door-with-animation.glb(Clone)",
             "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\door-with-animation.glb",
             "RelativePosition": {
-                "X": -0.7362671,
+                "X": 2.5824585,
                 "Y": 0.0,
-                "Z": 1.40661049
+                "Z": -0.153851509
             },
             "Rotation": {
                 "X": 0.0,
-                "Y": 0.0,
+                "Y": 8.742278E-08,
                 "Z": 0.0
             },
             "Components": []
@@ -35,43 +35,13 @@
             "Name": "door-with-animation.glb(Clone)",
             "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\door-with-animation.glb",
             "RelativePosition": {
-                "X": 3.15386963,
+                "X": -0.428588867,
                 "Y": 0.0,
-                "Z": -0.923092842
+                "Z": -2.94509983
             },
             "Rotation": {
                 "X": 0.0,
-                "Y": 0.0,
-                "Z": 0.0
-            },
-            "Components": []
-        },
-        {
-            "Name": "corredor-com-porta-torta",
-            "MeshPath": "",
-            "RelativePosition": {
-                "X": 0.0,
-                "Y": 0.0,
-                "Z": 0.0
-            },
-            "Rotation": {
-                "X": 0.0,
-                "Y": 0.0,
-                "Z": 0.0
-            },
-            "Components": []
-        },
-        {
-            "Name": "SalaEmLComPortaAnimadaECorredorDepois",
-            "MeshPath": "",
-            "RelativePosition": {
-                "X": 0.0,
-                "Y": 0.0,
-                "Z": 0.0
-            },
-            "Rotation": {
-                "X": 0.0,
-                "Y": 0.0,
+                "Y": 0.7071068,
                 "Z": 0.0
             },
             "Components": []
@@ -80,13 +50,13 @@
             "Name": "door-with-animation.glb(Clone)",
             "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\door-with-animation.glb",
             "RelativePosition": {
-                "X": 7.81329346,
+                "X": -3.2857666,
                 "Y": 0.0,
-                "Z": -2.02200985
+                "Z": -0.0659379959
             },
             "Rotation": {
                 "X": 0.0,
-                "Y": 0.0,
+                "Y": 1.0,
                 "Z": 0.0
             },
             "Components": []

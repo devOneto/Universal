@@ -1,0 +1,107 @@
+{
+    "Name": "SalaEmLComPortaAnimadaECorredorDepois",
+    "Components": [
+        {
+            "Name": "SalaEmLComPortaAnimada",
+            "MeshPath": "",
+            "RelativePosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
+            "Components": [
+                {
+                    "Name": "CorredorEmL",
+                    "MeshPath": "",
+                    "RelativePosition": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Components": [
+                        {
+                            "Name": "reference_cube.glb(Clone)",
+                            "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\reference_cube.glb",
+                            "RelativePosition": {
+                                "X": -0.538452148,
+                                "Y": 0.0,
+                                "Z": 2.00002575
+                            },
+                            "Components": []
+                        },
+                        {
+                            "Name": "reference_cube.glb(Clone)",
+                            "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\reference_cube.glb",
+                            "RelativePosition": {
+                                "X": -0.538452148,
+                                "Y": 0.0,
+                                "Z": 0.0219745636
+                            },
+                            "Components": []
+                        },
+                        {
+                            "Name": "reference_cube.glb(Clone)",
+                            "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\reference_cube.glb",
+                            "RelativePosition": {
+                                "X": -0.538452148,
+                                "Y": 0.0,
+                                "Z": -1.978054
+                            },
+                            "Components": []
+                        },
+                        {
+                            "Name": "reference_cube.glb(Clone)",
+                            "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\reference_cube.glb",
+                            "RelativePosition": {
+                                "X": 1.41760254,
+                                "Y": 0.0,
+                                "Z": -1.978054
+                            },
+                            "Components": []
+                        },
+                        {
+                            "Name": "reference_cube.glb(Clone)",
+                            "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\reference_cube.glb",
+                            "RelativePosition": {
+                                "X": 3.39563,
+                                "Y": 0.0,
+                                "Z": -1.978054
+                            },
+                            "Components": []
+                        }
+                    ]
+                },
+                {
+                    "Name": "door-with-animation.glb(Clone)",
+                    "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\door-with-animation.glb",
+                    "RelativePosition": {
+                        "X": 4.472595,
+                        "Y": 0.0,
+                        "Z": -1.978054
+                    },
+                    "Components": []
+                }
+            ]
+        },
+        {
+            "Name": "reference_cube.glb(Clone)",
+            "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\reference_cube.glb",
+            "RelativePosition": {
+                "X": 5.395691,
+                "Y": 0.0,
+                "Z": -1.978054
+            },
+            "Components": []
+        },
+        {
+            "Name": "reference_cube.glb(Clone)",
+            "MeshPath": "Z:\\Projects\\Academic\\Universal\\Assets\\Models\\reference_cube.glb",
+            "RelativePosition": {
+                "X": 7.37371826,
+                "Y": 0.0,
+                "Z": -1.978054
+            },
+            "Components": []
+        }
+    ]
+}
