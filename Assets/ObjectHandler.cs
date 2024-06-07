@@ -16,9 +16,9 @@ public class ObjectHandler : MonoBehaviour
 {
     public Camera ActiveCamera;
     public TextMeshPro ActionText;
-    public GameObject[] PleacableObjects;
     public GameObject HoldingContainer;
     public GameObject ComponentsContainer;
+    public float TransformPositionSnapValue;
 
     Vector3 MousePosition;
     GameObject HoldingModelObject;
@@ -37,10 +37,15 @@ public class ObjectHandler : MonoBehaviour
         if (HoldingModelObject)
         {
             // Set Mouse position based on Screen
-            MousePosition = ActiveCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 23));
-            // Move Holding Object According to Mouse Position
-            HoldingModelObject.transform.position = new Vector3(MousePosition.x, 0, MousePosition.z); 
-            //TODO: Single Responsability Principle is beeing disrespected
+            MousePosition = ActiveCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, ActiveCamera.transform.position.y));
+            
+            // Move Holding Object According to Mouse Position with grid snapping
+            HoldingModelObject.transform.position = new Vector3( GetSnappedPosition(MousePosition.x) , GetSnappedPosition(MousePosition.y), GetSnappedPosition(MousePosition.z));
+            
+            // Set scale correction
+            HoldingModelObject.transform.localScale = new Vector3(50f,50f,50f);
+            
+            
             if (Input.GetKeyDown(KeyCode.R)) {
                 HoldingModelObject.transform.eulerAngles = new Vector3{
                     x = HoldingModelObject.transform.eulerAngles.x,
@@ -48,6 +53,8 @@ public class ObjectHandler : MonoBehaviour
                     z = HoldingModelObject.transform.eulerAngles.z
                 };
             }
+            
+            if (Input.GetMouseButtonDown(0)) SetHoldingObjectPositionOnScene( HoldingModelObject.transform.position );
         }
 
         //TODO : Better user input management
@@ -55,8 +62,22 @@ public class ObjectHandler : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.S)) Save();
         if (Input.GetKeyDown(KeyCode.L)) Load();
         if (Input.GetKeyDown(KeyCode.Escape)) CleanHoldingObjectContainer();
-        if (HoldingModelObject && Input.GetMouseButtonDown(0)) SetHoldingObjectPositionOnScene();
 
+    }
+
+    private int GetSnappedPosition(float x)
+    {
+
+        var quocient = (int) (x / TransformPositionSnapValue);
+        var inferior = (int) TransformPositionSnapValue * quocient;
+        var superior = (int) TransformPositionSnapValue * ( quocient + 1);
+
+        Debug.Log(@$" x: {x}, snap: {TransformPositionSnapValue}, quocient: {quocient}, inferior: {inferior}, superior: {superior} ");
+
+        if( Math.Abs( x - inferior ) < Math.Abs( x - superior ) )
+            return inferior;
+        else
+            return superior;
     }
 
     private IList<string> GetGameObjectComponentsNameList(GameObject gameObject)
@@ -92,9 +113,9 @@ public class ObjectHandler : MonoBehaviour
         );
     }
 
-    void SetHoldingObjectPositionOnScene()
+    void SetHoldingObjectPositionOnScene( Vector3 position )
     {
-        GameObject newComponent = Instantiate(HoldingModelObject, MousePosition, Quaternion.Euler(HoldingModelObject.transform.eulerAngles.x, HoldingModelObject.transform.eulerAngles.y, HoldingModelObject.transform.eulerAngles.z) );
+        GameObject newComponent = Instantiate(HoldingModelObject, position, Quaternion.Euler(HoldingModelObject.transform.eulerAngles.x, HoldingModelObject.transform.eulerAngles.y, HoldingModelObject.transform.eulerAngles.z) );
         newComponent.tag = "Component";
         newComponent.transform.SetParent(ComponentsContainer.transform);
     }
