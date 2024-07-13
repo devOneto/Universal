@@ -8,7 +8,7 @@ using GLTFast;
 using Palmmedia.ReportGenerator.Core.Common;
 using SFB;
 using TMPro;
-using Unity.XR.CoreUtils;
+// using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.UI;
 
