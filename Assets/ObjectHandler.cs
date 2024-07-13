@@ -25,6 +25,8 @@ public class ObjectHandler : MonoBehaviour
     Vector3 ModelObjectOriginalPosition;
     IDataService DataService = new DataService();
 
+    float ObjectModelInPlacementVerticalValue;
+
     void Start()
     {
 
@@ -40,7 +42,7 @@ public class ObjectHandler : MonoBehaviour
             MousePosition = ActiveCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, ActiveCamera.transform.position.y));
             
             // Move Holding Object According to Mouse Position with grid snapping
-            HoldingModelObject.transform.position = new Vector3( GetSnappedPosition(MousePosition.x) , GetSnappedPosition(MousePosition.y), GetSnappedPosition(MousePosition.z));
+            HoldingModelObject.transform.position = new Vector3( GetSnappedPosition(MousePosition.x) , ObjectModelInPlacementVerticalValue, GetSnappedPosition(MousePosition.z));
             
             // Set scale correction
             HoldingModelObject.transform.localScale = new Vector3(50f,50f,50f);
@@ -53,15 +55,28 @@ public class ObjectHandler : MonoBehaviour
                     z = HoldingModelObject.transform.eulerAngles.z
                 };
             }
+
+            if( Input.GetKeyDown(KeyCode.Q) ){
+                ObjectModelInPlacementVerticalValue += 10;
+            }
+
+            if( Input.GetKeyDown(KeyCode.E) ){
+                ObjectModelInPlacementVerticalValue -= 10;
+            }
             
             if (Input.GetMouseButtonDown(0)) SetHoldingObjectPositionOnScene( HoldingModelObject.transform.position );
+
+            // Remove Holding Object
+            if (Input.GetKeyDown(KeyCode.Escape)) CleanHoldingObjectContainer();
         }
 
         //TODO : Better user input management
-        if (Input.GetKeyDown(KeyCode.Q)) ImportGLTFModelToScene();
-        if (Input.GetKeyDown(KeyCode.S)) Save();
-        if (Input.GetKeyDown(KeyCode.L)) Load();
-        if (Input.GetKeyDown(KeyCode.Escape)) CleanHoldingObjectContainer();
+        if(!HoldingModelObject){
+            if (Input.GetKeyDown(KeyCode.Q)) ImportGLTFModelToScene();
+            if (Input.GetKeyDown(KeyCode.S)) Save();
+            if (Input.GetKeyDown(KeyCode.L)) Load();
+        }
+        
 
     }
 
@@ -94,6 +109,7 @@ public class ObjectHandler : MonoBehaviour
 
     void ImportGLTFModelToScene()
     {
+        ObjectModelInPlacementVerticalValue = 0.0f;
         this.DestroyHoldingContainerComponents();
         StandaloneFileBrowser.OpenFilePanelAsync("Open File", "", "glb", false, (string[] paths) =>
         {
