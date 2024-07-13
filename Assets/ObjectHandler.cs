@@ -72,7 +72,7 @@ public class ObjectHandler : MonoBehaviour
         var inferior = (int) TransformPositionSnapValue * quocient;
         var superior = (int) TransformPositionSnapValue * ( quocient + 1);
 
-        Debug.Log(@$" x: {x}, snap: {TransformPositionSnapValue}, quocient: {quocient}, inferior: {inferior}, superior: {superior} ");
+        // Debug.Log(@$" x: {x}, snap: {TransformPositionSnapValue}, quocient: {quocient}, inferior: {inferior}, superior: {superior} ");
 
         if( Math.Abs( x - inferior ) < Math.Abs( x - superior ) )
             return inferior;
@@ -174,6 +174,7 @@ public class ObjectHandler : MonoBehaviour
                 GameObject newGameObject = CreateGameObjectFromUnivComponent(component);
                 
                 if ( ComponentsContainer.transform.childCount == 0 ){
+                    newGameObject.transform.localScale = new Vector3(50,50,50);
                     newGameObject.transform.SetParent(savedGameObjectContainer.transform);
                 }
             }
@@ -188,8 +189,10 @@ public class ObjectHandler : MonoBehaviour
         // Create Game Object
         var newGameObject = new GameObject();
         newGameObject.name = component.Name;
+        
         newGameObject.transform.position = new Vector3(component.RelativePosition.X, component.RelativePosition.Y, component.RelativePosition.Z);
-        newGameObject.transform.rotation = new Quaternion(component.Rotation.X,component.Rotation.Y,component.Rotation.Z, 1.0f);
+        newGameObject.transform.Rotate(new Vector3(component.Rotation.X,component.Rotation.Y,component.Rotation.Z)); 
+        
         var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
         gltf.Url = component.MeshPath;
         newGameObject.tag = "Component";
@@ -219,9 +222,9 @@ public class ObjectHandler : MonoBehaviour
                 Z = gameObject.transform.position.z
             },
             Rotation = new Rotation {
-                X = gameObject.transform.rotation.x,
-                Y = gameObject.transform.rotation.y,
-                Z = gameObject.transform.rotation.z,
+                X = gameObject.transform.eulerAngles.x,
+                Y = gameObject.transform.eulerAngles.y,
+                Z = gameObject.transform.eulerAngles.z,
             }
         };
         int childCount = 0;
