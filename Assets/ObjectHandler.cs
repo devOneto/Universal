@@ -45,7 +45,7 @@ public class ObjectHandler : MonoBehaviour
             HoldingModelObject.transform.position = new Vector3( GetSnappedPosition(MousePosition.x) , ObjectModelInPlacementVerticalValue, GetSnappedPosition(MousePosition.z));
             
             // Set scale correction
-            HoldingModelObject.transform.localScale = new Vector3(50f,50f,50f);
+            // HoldingModelObject.transform.localScale = new Vector3(50f,50f,50f);
             
             
             if (Input.GetKeyDown(KeyCode.R)) {
@@ -57,11 +57,11 @@ public class ObjectHandler : MonoBehaviour
             }
 
             if( Input.GetKeyDown(KeyCode.Q) ){
-                ObjectModelInPlacementVerticalValue += 10;
+                ObjectModelInPlacementVerticalValue += TransformPositionSnapValue;
             }
 
             if( Input.GetKeyDown(KeyCode.E) ){
-                ObjectModelInPlacementVerticalValue -= 10;
+                ObjectModelInPlacementVerticalValue -= TransformPositionSnapValue;
             }
             
             if (Input.GetMouseButtonDown(0)) SetHoldingObjectPositionOnScene( HoldingModelObject.transform.position );
@@ -183,6 +183,7 @@ public class ObjectHandler : MonoBehaviour
             SaveMetadata loadedSaveData = this.DataService.LoadData<SaveMetadata>(paths[0]);
 
             GameObject savedGameObjectContainer = new GameObject( loadedSaveData.Name );
+            savedGameObjectContainer.transform.position = Vector3.zero;
             savedGameObjectContainer.tag = "Component";
 
             foreach (Component component in loadedSaveData.Components )
@@ -190,7 +191,7 @@ public class ObjectHandler : MonoBehaviour
                 GameObject newGameObject = CreateGameObjectFromUnivComponent(component);
                 
                 if ( ComponentsContainer.transform.childCount == 0 ){
-                    newGameObject.transform.localScale = new Vector3(50,50,50);
+                    // newGameObject.transform.localScale = new Vector3(50,50,50);
                     newGameObject.transform.SetParent(savedGameObjectContainer.transform);
                 }
             }
