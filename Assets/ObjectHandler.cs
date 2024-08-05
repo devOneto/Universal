@@ -114,13 +114,20 @@ public class ObjectHandler : MonoBehaviour
         StandaloneFileBrowser.OpenFilePanelAsync("Open File", "", "glb", false, (string[] paths) =>
         {
 
+            // Treat path
+            var splitedPath =  paths[0].Contains("/") ? paths[0].Split("/") : paths[0].Split("\\"); // if in windows it uses \, uhg...
+            string modelFileName = splitedPath.Last();
+            string modelName = modelFileName.Split(".")[0];
+
             // Create a temporary game object to hold the placeble object
-            GameObject newGameObject = new GameObject(paths[0].Split("\\").Last());
+            GameObject newGameObject = new GameObject();
+            newGameObject.name = modelName;
             // Set this object as child of Components Container ( in order to organize )
             newGameObject.transform.SetParent(HoldingContainer.transform);
             // Load component with the file path
             var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
-            gltf.Url = paths[0];
+            gltf.Url = Application.dataPath;
+            gltf.Url += Application.dataPath.Contains("/") ? $"/Models/{modelFileName}" : $"\\Models\\{modelFileName}"; //TODO!!!
 
             // Set holding object as the created component
             this.HoldingModelObject = newGameObject;
@@ -211,7 +218,7 @@ public class ObjectHandler : MonoBehaviour
         newGameObject.transform.Rotate(new Vector3(component.Rotation.X,component.Rotation.Y,component.Rotation.Z)); 
         
         var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
-        gltf.Url = component.MeshPath;
+        gltf.Url = getPathFromFileName(component.FileName);
         newGameObject.tag = "Component";
 
         int currentChildIndex = 0;
@@ -231,7 +238,7 @@ public class ObjectHandler : MonoBehaviour
 
         Component resultComponent  = new Component {
             Name = gameObject.name,
-            MeshPath = gameObject.GetComponent<GLTFast.GltfAsset>() ? gameObject.GetComponent<GLTFast.GltfAsset>().Url : "",
+            FileName = gameObject.GetComponent<GLTFast.GltfAsset>() ? getFileNameFromPath(gameObject.GetComponent<GLTFast.GltfAsset>().Url) : "",
             RelativePosition = new Position
             {
                 X = gameObject.transform.position.x,
@@ -255,4 +262,7 @@ public class ObjectHandler : MonoBehaviour
         return resultComponent;
     }
 
+    private string getFileNameFromPath(string url) => url.Contains("/") ? url.Split("/").Last() : url.Split("\\").Last();
+
+    private string getPathFromFileName(string name) => Application.dataPath + (Application.dataPath.Contains("/") ? $"/Models/{name}" : $"\\Models\\{name}");
 }
