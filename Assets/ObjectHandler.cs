@@ -17,6 +17,7 @@ public class ObjectHandler : MonoBehaviour
     public TextMeshPro ActionText;
     public GameObject HoldingContainer;
     public GameObject ComponentsContainer;
+    public float VerticalMovementSnapValue;
     public float TransformPositionSnapValue;
 
     Vector3 MousePosition;
@@ -56,13 +57,22 @@ public class ObjectHandler : MonoBehaviour
             }
 
             if( Input.GetKeyDown(KeyCode.Q) ){
-                ObjectModelInPlacementVerticalValue += TransformPositionSnapValue;
+                ObjectModelInPlacementVerticalValue += VerticalMovementSnapValue;
             }
 
             if( Input.GetKeyDown(KeyCode.E) ){
-                ObjectModelInPlacementVerticalValue -= TransformPositionSnapValue;
+                ObjectModelInPlacementVerticalValue -= VerticalMovementSnapValue;
             }
             
+            if( Input.GetKeyDown(KeyCode.T) ){
+                HoldingModelObject.transform.localScale *= 1.1f;
+            }
+
+            if( Input.GetKeyDown(KeyCode.G) ){
+                HoldingModelObject.transform.localScale /= 1.1f;
+            }
+
+
             if (Input.GetMouseButtonDown(0)) SetHoldingObjectPositionOnScene( HoldingModelObject.transform.position );
 
             // Remove Holding Object
@@ -215,7 +225,8 @@ public class ObjectHandler : MonoBehaviour
         
         newGameObject.transform.position = new Vector3(component.RelativePosition.X, component.RelativePosition.Y, component.RelativePosition.Z);
         newGameObject.transform.Rotate(new Vector3(component.Rotation.X,component.Rotation.Y,component.Rotation.Z)); 
-        
+        newGameObject.transform.localScale = new Vector3( component.Scale.X, component.Scale.Y, component.Scale.Z );
+
         var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
         gltf.Url = component.LocalModelFilePath;
         newGameObject.tag = "Component";
@@ -238,16 +249,21 @@ public class ObjectHandler : MonoBehaviour
         Component resultComponent  = new Component {
             Name = gameObject.name,
             LocalModelFilePath = gameObject.GetComponent<GLTFast.GltfAsset>() ? gameObject.GetComponent<GLTFast.GltfAsset>().Url : "",
-            RelativePosition = new Position
+            RelativePosition = new UniversalEditor.Position
             {
                 X = gameObject.transform.position.x,
                 Y = gameObject.transform.position.y,
                 Z = gameObject.transform.position.z
             },
-            Rotation = new Rotation {
+            Rotation = new UniversalEditor.Rotation {
                 X = gameObject.transform.eulerAngles.x,
                 Y = gameObject.transform.eulerAngles.y,
                 Z = gameObject.transform.eulerAngles.z,
+            },
+            Scale = new UniversalEditor.Scale {
+                X = gameObject.transform.localScale.x,
+                Y = gameObject.transform.localScale.y,
+                Z = gameObject.transform.localScale.z,
             }
         };
         int childCount = 0;

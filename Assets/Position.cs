@@ -1,5 +1,9 @@
-public class Position {
-    public float X { get; set; } = 0.0f;
-    public float Y { get; set; } = 0.0f;
-    public float Z { get; set; } = 0.0f;
+namespace UniversalEditor{
+
+    public class Position {
+        public float X { get; set; } = 0.0f;
+        public float Y { get; set; } = 0.0f;
+        public float Z { get; set; } = 0.0f;
+    }
+
 }
