@@ -114,6 +114,8 @@ public class ObjectHandler : MonoBehaviour
         StandaloneFileBrowser.OpenFilePanelAsync("Open File", "", "glb", false, (string[] paths) =>
         {
 
+            if( paths[0] == "" ) return;
+
             // Treat path
             var splitedPath =  paths[0].Contains("/") ? paths[0].Split("/") : paths[0].Split("\\"); // if in windows it uses \, uhg...
             string modelFileName = splitedPath.Last();
