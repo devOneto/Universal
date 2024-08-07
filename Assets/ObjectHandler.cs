@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GLTFast;
-using Palmmedia.ReportGenerator.Core.Common;
 using SFB;
 using TMPro;
 // using Unity.XR.CoreUtils;
@@ -128,8 +127,7 @@ public class ObjectHandler : MonoBehaviour
             newGameObject.transform.SetParent(HoldingContainer.transform);
             // Load component with the file path
             var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
-            gltf.Url = Application.dataPath;
-            gltf.Url += Application.dataPath.Contains("/") ? $"/Models/{modelFileName}" : $"\\Models\\{modelFileName}"; //TODO!!!
+            gltf.Url = paths[0];
 
             // Set holding object as the created component
             this.HoldingModelObject = newGameObject;
@@ -200,7 +198,6 @@ public class ObjectHandler : MonoBehaviour
                 GameObject newGameObject = CreateGameObjectFromUnivComponent(component);
                 
                 if ( ComponentsContainer.transform.childCount == 0 ){
-                    // newGameObject.transform.localScale = new Vector3(50,50,50);
                     newGameObject.transform.SetParent(savedGameObjectContainer.transform);
                 }
             }
@@ -220,7 +217,7 @@ public class ObjectHandler : MonoBehaviour
         newGameObject.transform.Rotate(new Vector3(component.Rotation.X,component.Rotation.Y,component.Rotation.Z)); 
         
         var gltf = newGameObject.AddComponent<GLTFast.GltfAsset>();
-        gltf.Url = getPathFromFileName(component.FileName);
+        gltf.Url = component.LocalModelFilePath;
         newGameObject.tag = "Component";
 
         int currentChildIndex = 0;
@@ -240,7 +237,7 @@ public class ObjectHandler : MonoBehaviour
 
         Component resultComponent  = new Component {
             Name = gameObject.name,
-            FileName = gameObject.GetComponent<GLTFast.GltfAsset>() ? getFileNameFromPath(gameObject.GetComponent<GLTFast.GltfAsset>().Url) : "",
+            LocalModelFilePath = gameObject.GetComponent<GLTFast.GltfAsset>() ? gameObject.GetComponent<GLTFast.GltfAsset>().Url : "",
             RelativePosition = new Position
             {
                 X = gameObject.transform.position.x,
